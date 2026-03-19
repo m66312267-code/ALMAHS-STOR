@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>المروة موبايل</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #020408;
+  --bg2: #050c14;
+  --cyan: #00f5ff;
+  --gold: #ffd700;
+  --gold2: #ffaa00;
+  --white: #e8f4f8;
+  --muted: #4a6070;
+  --card: rgba(0,245,255,0.03);
+  --border: rgba(0,245,255,0.12);
+  --border-gold: rgba(255,215,0,0.25);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:'Cairo',sans-serif;
+  background:var(--bg);
+  color:var(--white);
+  overflow-x:hidden;
+}
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,245,255,0.012) 2px,rgba(0,245,255,0.012) 4px);
+  pointer-events:none; z-index:9999;
+}
+.cursor { position:fixed;width:20px;height:20px;border:2px solid var(--cyan);border-radius:50%;pointer-events:none;z-index:99999;transition:transform 0.15s;transform:translate(-50%,-50%);mix-blend-mode:screen; }
+.cursor-dot { position:fixed;width:4px;height:4px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%); }
+#particles { position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden; }
+.particle { position:absolute;width:2px;height:2px;background:var(--cyan);border-radius:50%;animation:floatUp linear infinite;opacity:0; }
+@keyframes floatUp { 0%{transform:translateY(100vh);opacity:0} 10%{opacity:0.6} 90%{opacity:0.3} 100%{transform:translateY(-10vh);opacity:0} }
+
+/* NAV */
+nav {
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 1.5rem;
+  background:rgba(2,4,8,0.93);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.logo { font-size:1.4rem;font-weight:900;letter-spacing:2px; }
+.logo .l1 { color:var(--cyan);text-shadow:0 0 20px var(--cyan),0 0 40px var(--cyan); }
+.logo .l2 { color:var(--gold);font-size:0.65rem;display:block;letter-spacing:4px;font-weight:600;text-shadow:0 0 10px var(--gold);margin-top:-4px; }
+.nav-right { display:flex;gap:0.8rem;align-items:center; }
+.nav-links { display:none;gap:1.5rem;list-style:none; }
+.nav-links a { color:var(--muted);text-decoration:none;font-size:0.85rem;font-weight:600;transition:color 0.2s; }
+.nav-links a:hover { color:var(--cyan); }
+@media(min-width:768px){ .nav-links{display:flex;} }
+.nav-wa {
+  background:linear-gradient(135deg,#00c853,#00e676);color:#000;border:none;
+  padding:0.55rem 1.1rem;font-family:'Cairo',sans-serif;font-weight:700;font-size:0.85rem;
+  cursor:pointer;display:flex;align-items:center;gap:0.4rem;text-decoration:none;
+  clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+  transition:box-shadow 0.2s,transform 0.2s;
+}
+.nav-wa:hover { box-shadow:0 0 25px rgba(0,200,83,0.6);transform:translateY(-2px); }
+
+/* HERO */
+.hero {
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:7rem 1.5rem 5rem;position:relative;text-align:center;overflow:hidden;
+}
+.hero-hex {
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 40%,rgba(0,245,255,0.07) 0%,transparent 70%),
+    radial-gradient(ellipse 40% 40% at 80% 80%,rgba(255,215,0,0.04) 0%,transparent 60%);
+}
+.hero-grid {
+  position:absolute;inset:0;
+  background:linear-gradient(rgba(0,245,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.04) 1px,transparent 1px);
+  background-size:50px 50px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 80%);
+}
+.corner { position:absolute;width:50px;height:50px; }
+.c-tr { top:80px;right:20px;border-top:2px solid var(--cyan);border-right:2px solid var(--cyan); }
+.c-bl { bottom:80px;left:20px;border-bottom:2px solid var(--cyan);border-left:2px solid var(--cyan); }
+
+.hero-badge {
+  display:inline-flex;align-items:center;gap:0.5rem;
+  border:1px solid var(--border-gold);background:rgba(255,215,0,0.06);
+  color:var(--gold);font-size:0.75rem;font-weight:700;
+  padding:0.4rem 1.2rem;letter-spacing:3px;
+  clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);
+  margin-bottom:2rem;animation:fadeUp 0.5s ease both;position:relative;z-index:2;
+}
+.bdot { width:6px;height:6px;background:var(--gold);border-radius:50%;animation:bpulse 1.5s ease infinite; }
+@keyframes bpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.6)}}
+
+.hero h1 {
+  font-size:clamp(2.2rem,8vw,4.5rem);font-weight:900;line-height:1.1;
+  margin-bottom:1.2rem;animation:fadeUp 0.5s 0.1s ease both;position:relative;z-index:2;
+}
+.glitch {
+  color:var(--cyan);text-shadow:0 0 30px var(--cyan),0 0 60px rgba(0,245,255,0.4);
+  display:inline-block;animation:glitch 4s ease infinite;
+}
+@keyframes glitch {
+  0%,95%,100%{text-shadow:0 0 30px var(--cyan),0 0 60px rgba(0,245,255,0.4);transform:none}
+  96%{text-shadow:-3px 0 var(--gold),3px 0 rgba(0,245,255,0.8);transform:skewX(-2deg)}
+  97%{text-shadow:3px 0 var(--gold),-3px 0 rgba(0,245,255,0.8);transform:skewX(2deg)}
+  98%{text-shadow:0 0 30px var(--cyan);transform:none}
+}
+.hero-sub {
+  font-size:1rem;color:var(--muted);line-height:1.8;margin-bottom:2.5rem;
+  animation:fadeUp 0.5s 0.2s ease both;position:relative;z-index:2;
+}
+.hero-sub span { color:var(--cyan);font-weight:700; }
+
+.hero-btns { display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;animation:fadeUp 0.5s 0.3s ease both;position:relative;z-index:2; }
+.btn-glow {
+  background:transparent;color:var(--cyan);border:1px solid var(--cyan);
+  padding:0.85rem 1.8rem;font-family:'Cairo',sans-serif;font-weight:700;font-size:0.95rem;
+  cursor:pointer;text-decoration:none;
+  clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);
+  position:relative;overflow:hidden;transition:box-shadow 0.3s,color 0.3s;
+  display:inline-flex;align-items:center;gap:0.5rem;
+}
+.btn-glow::before { content:'';position:absolute;inset:0;background:var(--cyan);transform:translateX(-101%);transition:transform 0.3s;z-index:-1; }
+.btn-glow:hover { color:#000;box-shadow:0 0 30px rgba(0,245,255,0.5); }
+.btn-glow:hover::before { transform:translateX(0); }
+.btn-gold {
+  background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;border:none;
+  padding:0.85rem 1.8rem;font-family:'Cairo',sans-serif;font-weight:900;font-size:0.95rem;
+  cursor:pointer;text-decoration:none;
+  clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);
+  transition:box-shadow 0.3s,transform 0.2s;display:inline-flex;align-items:center;gap:0.5rem;
+}
+.btn-gold:hover { box-shadow:0 0 30px rgba(255,215,0,0.5);transform:translateY(-2px); }
+
+.scroll-ind { position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:0.4rem;z-index:2; }
+.scroll-line { width:1px;height:40px;background:linear-gradient(to bottom,var(--cyan),transparent);animation:spulse 2s ease infinite; }
+@keyframes spulse{0%,100%{opacity:0.3}50%{opacity:1}}
+
+/* TICKER */
+.ticker { background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0.7rem 0;overflow:hidden;position:relative;z-index:10; }
+.ticker-track { display:flex;gap:3rem;animation:ticker 25s linear infinite;white-space:nowrap; }
+.ticker-track span { font-size:0.75rem;font-weight:700;letter-spacing:2px;color:var(--muted);flex-shrink:0; }
+.t-c { color:var(--cyan); } .t-g { color:var(--gold); }
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* SECTION */
+section { position:relative;z-index:10; }
+.sec-header { text-align:center;margin-bottom:2.5rem;padding:0 1.5rem; }
+.sec-tag { display:inline-block;font-size:0.7rem;font-weight:700;letter-spacing:4px;color:var(--cyan);border:1px solid var(--border);padding:0.3rem 1rem;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);margin-bottom:0.8rem; }
+.sec-header h2 { font-size:clamp(1.6rem,5vw,2.5rem);font-weight:900; }
+.sec-header h2 span { color:var(--cyan);text-shadow:0 0 20px var(--cyan); }
+.sec-header p { color:var(--muted);font-size:0.88rem;margin-top:0.4rem; }
+
+/* PRODUCTS */
+.products { padding:4rem 1.5rem; }
+.products-grid {
+  display:grid;grid-template-columns:1fr 1fr;gap:1rem;max-width:480px;margin:0 auto;
+}
+@media(min-width:600px){ .products-grid{grid-template-columns:repeat(3,1fr);max-width:700px;} }
+@media(min-width:1024px){ .products-grid{grid-template-columns:repeat(4,1fr);max-width:1100px;} }
+
+.pcard {
+  background:var(--card);border:1px solid var(--border);
+  overflow:hidden;position:relative;
+  transition:border-color 0.3s,box-shadow 0.3s,transform 0.3s;
+  clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px));
+}
+.pcard:hover { border-color:var(--cyan);box-shadow:0 0 25px rgba(0,245,255,0.15),inset 0 0 20px rgba(0,245,255,0.03);transform:translateY(-5px); }
+.pcard::before { content:'';position:absolute;top:0;left:0;width:14px;height:14px;background:var(--cyan);clip-path:polygon(0 0,100% 0,0 100%);opacity:0.5;transition:opacity 0.3s; }
+.pcard:hover::before { opacity:1; }
+
+.pimg { width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:3.2rem;background:linear-gradient(135deg,rgba(0,245,255,0.05),rgba(255,215,0,0.02));position:relative;overflow:hidden; }
+.pimg::after { content:'';position:absolute;bottom:0;left:0;right:0;height:35%;background:linear-gradient(to top,var(--bg),transparent); }
+.pbadge { position:absolute;top:0.5rem;right:0.5rem;font-size:0.6rem;font-weight:700;letter-spacing:1px;padding:0.2rem 0.55rem;clip-path:polygon(5px 0%,100% 0%,calc(100% - 5px) 100%,0% 100%); }
+.pbadge.new { background:var(--cyan);color:#000; }
+.pbadge.hot { background:var(--gold);color:#000; }
+.pbadge.sale { background:#ff4444;color:#fff; }
+
+.pinfo { padding:0.85rem; }
+.pbrand { font-size:0.6rem;font-weight:700;letter-spacing:3px;color:var(--cyan);margin-bottom:0.2rem; }
+.pname { font-size:0.88rem;font-weight:700;margin-bottom:0.25rem;line-height:1.3; }
+.pspec { font-size:0.68rem;color:var(--muted);margin-bottom:0.75rem;line-height:1.5; }
+.pfooter { display:flex;align-items:center;justify-content:space-between;gap:0.4rem; }
+.pprice { font-size:0.75rem;color:var(--muted); }
+.pprice strong { display:block;font-size:0.9rem;color:var(--gold);text-shadow:0 0 8px rgba(255,215,0,0.3); }
+
+.pbtn {
+  background:transparent;border:1px solid #00c853;color:#00e676;
+  padding:0.4rem 0.7rem;font-family:'Cairo',sans-serif;font-size:0.68rem;font-weight:700;
+  cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:0.3rem;
+  clip-path:polygon(5px 0%,100% 0%,calc(100% - 5px) 100%,0% 100%);
+  transition:background 0.2s,box-shadow 0.2s;white-space:nowrap;
+}
+.pbtn:hover { background:rgba(0,200,83,0.15);box-shadow:0 0 12px rgba(0,200,83,0.4); }
+
+/* ACCESSORIES */
+.accessories { padding:3.5rem 1.5rem;background:var(--bg2); }
+.acc-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:0.8rem;max-width:500px;margin:0 auto; }
+@media(min-width:768px){ .acc-grid{grid-template-columns:repeat(6,1fr);max-width:900px;} }
+.accard {
+  background:var(--card);border:1px solid var(--border);padding:1.2rem 0.6rem;text-align:center;
+  text-decoration:none;color:var(--white);
+  transition:border-color 0.2s,box-shadow 0.2s,transform 0.2s;
+  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));
+}
+.accard:hover { border-color:var(--gold);box-shadow:0 0 20px rgba(255,215,0,0.15);transform:translateY(-3px); }
+.acicon { font-size:1.8rem;display:block;margin-bottom:0.5rem; }
+.acname { font-size:0.7rem;font-weight:700;margin-bottom:0.3rem; }
+.acprice { font-size:0.62rem;color:var(--gold);font-weight:700; }
+
+/* WHY */
+.why { padding:4rem 1.5rem; }
+.why-grid { display:grid;grid-template-columns:1fr 1fr;gap:1rem;max-width:600px;margin:0 auto; }
+@media(min-width:768px){ .why-grid{grid-template-columns:repeat(4,1fr);max-width:900px;} }
+.whycard { background:var(--card);border:1px solid var(--border);padding:1.5rem 1rem;text-align:center;position:relative;overflow:hidden; }
+.whycard::after { content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);transform:scaleX(0);transition:transform 0.4s; }
+.whycard:hover::after { transform:scaleX(1); }
+.whyicon { font-size:1.8rem;display:block;margin-bottom:0.7rem; }
+.whytitle { font-size:0.82rem;font-weight:700;color:var(--cyan);margin-bottom:0.3rem; }
+.whydesc { font-size:0.72rem;color:var(--muted);line-height:1.6; }
+
+/* LOCATION */
+.location { padding:3rem 1.5rem;background:var(--bg2); }
+.loc-cards { display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;max-width:600px;margin:0 auto; }
+.loccard { background:var(--card);border:1px solid var(--border-gold);padding:1.2rem 1.5rem;text-align:center;flex:1;min-width:130px;clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%); }
+.locicon { font-size:1.5rem;display:block;margin-bottom:0.4rem; }
+.locname { font-size:0.9rem;font-weight:700;color:var(--gold); }
+
+/* CTA */
+.cta { padding:5rem 1.5rem;text-align:center;position:relative;overflow:hidden; }
+.cta-glow { position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(0,245,255,0.06) 0%,transparent 70%); }
+.cta-frame { position:absolute;inset:1.5rem;border:1px solid var(--border);pointer-events:none;clip-path:polygon(20px 0%,100% 0%,calc(100% - 20px) 100%,0% 100%); }
+.cta h2 { font-size:clamp(1.6rem,5vw,2.8rem);font-weight:900;position:relative;margin-bottom:0.8rem; }
+.cta h2 span { color:var(--gold);text-shadow:0 0 20px var(--gold); }
+.cta p { color:var(--muted);position:relative;margin-bottom:2rem; }
+.cta-btns { display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;position:relative; }
+
+/* FOOTER */
+footer { padding:1.5rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.8rem; }
+footer p { font-size:0.78rem;color:var(--muted); }
+
+/* ANIM */
+@keyframes fadeUp { from{opacity:0;transform:translateY(25px)} to{opacity:1;transform:translateY(0)} }
+.reveal { opacity:0;transform:translateY(30px);transition:opacity 0.6s ease,transform 0.6s ease; }
+.reveal.visible { opacity:1;transform:translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-dot" id="cdot"></div>
+<div id="particles"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">
+    <span class="l1">المروة</span>
+    <span class="l2">MOBILE STORE</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#products">التليفونات</a></li>
+    <li><a href="#accessories">الإكسسوارات</a></li>
+    <li><a href="#location">الفروع</a></li>
+  </ul>
+  <a href="https://wa.me/201032091913?text=مرحبا، عايز أستفسر" target="_blank" class="nav-wa">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    واتساب
+  </a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-hex"></div>
+  <div class="hero-grid"></div>
+  <div class="corner c-tr"></div>
+  <div class="corner c-bl"></div>
+
+  <div class="hero-badge">
+    <span class="bdot"></span>
+    أحدث الموديلات متاحة الآن
+  </div>
+
+  <h1>
+    احصل على<br>
+    <span class="glitch">تليفونك المثالي</span><br>
+    من المروة
+  </h1>
+
+  <p class="hero-sub">
+    أحدث التليفونات والإكسسوارات<br>
+    <span>كفر الشيخ · سيدي سالم · أوغنيمة</span>
+  </p>
+
+  <div class="hero-btns">
+    <a href="#products" class="btn-glow">🛒 تصفح المنتجات</a>
+    <a href="https://wa.me/201032091913?text=مرحبا، عايز أستفسر" target="_blank" class="btn-gold">💬 تكلم معانا</a>
+  </div>
+
+  <div class="scroll-ind"><div class="scroll-line"></div></div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span class="t-c">iPhone</span><span>✦</span><span>Samsung</span><span>✦</span>
+    <span class="t-g">Xiaomi</span><span>✦</span><span>OPPO</span><span>✦</span>
+    <span class="t-c">Realme</span><span>✦</span><span>ضمان أصلي</span><span>✦</span>
+    <span class="t-g">توصيل سريع</span><span>✦</span><span>إكسسوارات</span><span>✦</span>
+    <span class="t-c">iPhone</span><span>✦</span><span>Samsung</span><span>✦</span>
+    <span class="t-g">Xiaomi</span><span>✦</span><span>OPPO</span><span>✦</span>
+    <span class="t-c">Realme</span><span>✦</span><span>ضمان أصلي</span><span>✦</span>
+    <span class="t-g">توصيل سريع</span><span>✦</span><span>إكسسوارات</span><span>✦</span>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<section class="products" id="products">
+  <div class="sec-header reveal">
+    <div class="sec-tag">// التليفونات</div>
+    <h2>أحدث <span>الموديلات</span></h2>
+    <p>اضغط على أي منتج للاستفسار عبر الواتساب</p>
+  </div>
+  <div class="products-grid">
+
+    <div class="pcard reveal">
+      <div class="pimg">📱<span class="pbadge new">NEW</span></div>
+      <div class="pinfo">
+        <div class="pbrand">APPLE</div>
+        <div class="pname">iPhone 15 Pro Max</div>
+        <div class="pspec">6.7" · 48MP · 256GB · تيتانيوم</div>
+        <div class="pfooter">
+          <div class="pprice"><strong>اسأل عن السعر</strong></div>
+          <a href="https://wa.me/201032091913?text=عايز أعرف سعر iPhone 15 Pro Max" target="_blank" class="pbtn">اسأل</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard reveal">
+      <div class="pimg">📱<span class="pbadge hot">HOT</span></div>
+      <div class="pinfo">
+        <div class="pbrand">SAMSUNG</div>
+        <div class="pname">Galaxy S24 Ultra</div>
+        <div class="pspec">6.8" · 200MP · S Pen</div>
+        <div class="pfooter">
+          <div class="pprice"><strong>اسأل عن السعر</strong></div>
+          <a href="https://wa.me/201032091913?text=عايز أعرف سعر Galaxy S24 Ultra" target="_blank" class="pbtn">اسأل</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard reveal">
+      <div class="pimg">📱</div>
+      <div class="pinfo">
+        <div class="pbrand">XIAOMI</div>
+        <div class="pname">Redmi Note 13 Pro</div>
+        <div class="pspec">6.67" · 200MP · 256GB</div>
+        <div class="pfooter">
+          <div class="pprice"><strong>اسأل عن السعر</strong></div>
+          <a href="https://wa.me/201032091913?text=عايز أعرف سعر Redmi Note 13 Pro" target="_blank" class="pbtn">اسأل</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard reveal">
+      <div class="pimg">📱<span class="pbadge sale">SALE</span></div>
+      <div class="pinfo">
+        <div class="pbrand">OPPO</div>
+        <div class="pname">Reno 11 Pro</div>
+        <div class="pspec">6.74" · 50MP · 256GB</div>
+        <div class="pfooter">
+          <div class="pprice"><strong>اسأل عن السعر</strong></div>
+          <a href="https://wa.me/201032091913?text=عايز أعرف سعر OPPO Reno 11 Pro" target="_blank" class="pbtn">اسأل</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard reveal">
+      <div class="pimg">📱<span class="pbadge new">NEW</span></div>
+      <div class="pinfo">
+        <div class="pbrand">REALME</div>
+        <div class="pname">Realme 12 Pro+</div>
+        <div class="pspec">6.7" · 50MP · 256GB</div>
+        <div class="pfooter">
+          <div class="pprice"><strong>اسأل عن السعر</strong></div>
+          <a href="https://wa.me/201032091913?text=عايز أعرف سعر Realme 12 Pro+" target="_blank" class="pbtn">اسأل</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pcard reveal">
+      <div class="pimg">📱</div>
+      <div class="pinfo">
+        <div class="pbrand">INFINIX</div>
+        <div class="pname">Hot 40 Pro</div>
+        <div class="pspec">6.78" · 108MP · 256GB</div>
+        <div class="pfooter">
+          <div class="pprice"><strong>اسأل عن السعر</strong></div>
+          <a href="https://wa.me/201032091913?text=عايز أعرف سعر Infinix Hot 40 Pro" target="_blank" class="pbtn">اسأل</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ACCESSORIES -->
+<section class="accessories" id="accessories">
+  <div class="sec-header reveal">
+    <div class="sec-tag">// الإكسسوارات</div>
+    <h2>كل <span>اللي تحتاجه</span></h2>
+  </div>
+  <div class="acc-grid">
+    <a href="https://wa.me/201032091913?text=عايز أعرف عن الكفرات" target="_blank" class="accard reveal"><span class="acicon">🛡️</span><div class="acname">كفرات</div><div class="acprice">اسأل عن السعر</div></a>
+    <a href="https://wa.me/201032091913?text=عايز أعرف عن السماعات" target="_blank" class="accard reveal"><span class="acicon">🎧</span><div class="acname">سماعات</div><div class="acprice">اسأل عن السعر</div></a>
+    <a href="https://wa.me/201032091913?text=عايز أعرف عن الشواحن" target="_blank" class="accard reveal"><span class="acicon">⚡</span><div class="acname">شواحن</div><div class="acprice">اسأل عن السعر</div></a>
+    <a href="https://wa.me/201032091913?text=عايز أعرف عن الجرابات" target="_blank" class="accard reveal"><span class="acicon">📦</span><div class="acname">جرابات</div><div class="acprice">اسأل عن السعر</div></a>
+    <a href="https://wa.me/201032091913?text=عايز أعرف عن الجلاسات" target="_blank" class="accard reveal"><span class="acicon">🪟</span><div class="acname">جلاسات</div><div class="acprice">اسأل عن السعر</div></a>
+    <a href="https://wa.me/201032091913?text=عايز أعرف عن البور بانك" target="_blank" class="accard reveal"><span class="acicon">🔋</span><div class="acname">بور بانك</div><div class="acprice">اسأل عن السعر</div></a>
+  </div>
+</section>
+
+<!-- WHY -->
+<section class="why">
+  <div class="sec-header reveal">
+    <div class="sec-tag">// ليه المروة؟</div>
+    <h2>مميزاتنا <span>ليك</span></h2>
+  </div>
+  <div class="why-grid">
+    <div class="whycard reveal"><span class="whyicon">✅</span><div class="whytitle">منتجات أصلية</div><div class="whydesc">ضمان رسمي على كل المنتجات</div></div>
+    <div class="whycard reveal"><span class="whyicon">🚀</span><div class="whytitle">توصيل سريع</div><div class="whydesc">لكل أنحاء محافظة كفر الشيخ</div></div>
+    <div class="whycard reveal"><span class="whyicon">💰</span><div class="whytitle">أسعار منافسة</div><div class="whydesc">أحسن الأسعار في المنطقة</div></div>
+    <div class="whycard reveal"><span class="whyicon">💬</span><div class="whytitle">رد سريع</div><div class="whydesc">واتساب متاح طول اليوم</div></div>
+  </div>
+</section>
+
+<!-- LOCATION -->
+<section class="location" id="location">
+  <div class="sec-header reveal">
+    <div class="sec-tag">// فين بتلاقينا</div>
+    <h2>مناطق <span>الخدمة</span></h2>
+  </div>
+  <div class="loc-cards">
+    <div class="loccard reveal"><span class="locicon">📍</span><div class="locname">كفر الشيخ</div></div>
+    <div class="loccard reveal"><span class="locicon">📍</span><div class="locname">سيدي سالم</div></div>
+    <div class="loccard reveal"><span class="locicon">📍</span><div class="locname">أوغنيمة</div></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <div class="cta-glow"></div>
+  <div class="cta-frame"></div>
+  <h2 class="reveal">عايز تطلب دلوقتي؟ <span>🔥</span></h2>
+  <p class="reveal">تواصل معانا على الواتساب وهنرد عليك في ثواني</p>
+  <div class="cta-btns">
+    <a href="https://wa.me/201032091913?text=مرحبا، عايز أطلب منتج" target="_blank" class="btn-gold reveal">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      ابعت رسالة دلوقتي
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="logo" style="font-size:1.1rem"><span class="l1">المروة</span></div>
+    <p style="margin-top:0.2rem;">موبايل ستور · كفر الشيخ</p>
+  </div>
+  <p>© 2025 جميع الحقوق محفوظة</p>
+  <p style="color:var(--cyan);font-size:0.72rem;font-weight:700;letter-spacing:1px;">⌨️ Developed by <span style="color:var(--gold);text-shadow:0 0 8px var(--gold);">Mohamed Fahmy Almahs</span></p>
+</footer>
+
+<script>
+// Cursor - desktop only, no touch
+const cur = document.getElementById('cursor'), dot = document.getElementById('cdot');
+const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+if(!isTouch && window.innerWidth > 768) {
+  document.body.style.cursor = 'none';
+  document.addEventListener('mousemove', e => {
+    cur.style.left = e.clientX+'px'; cur.style.top = e.clientY+'px';
+    dot.style.left = e.clientX+'px'; dot.style.top = e.clientY+'px';
+  });
+  document.querySelectorAll('a,button').forEach(el => {
+    el.addEventListener('mouseenter', () => cur.style.transform='translate(-50%,-50%) scale(2)');
+    el.addEventListener('mouseleave', () => cur.style.transform='translate(-50%,-50%) scale(1)');
+  });
+} else { cur.style.display='none'; dot.style.display='none'; }
+
+// Particles
+const pc = document.getElementById('particles');
+for(let i=0;i<25;i++){
+  const p=document.createElement('div'); p.className='particle';
+  p.style.cssText=`left:${Math.random()*100}%;animation-duration:${8+Math.random()*12}s;animation-delay:${Math.random()*10}s;width:${1+Math.random()*2}px;height:${1+Math.random()*2}px;`;
+  if(Math.random()>0.7) p.style.background='#ffd700';
+  pc.appendChild(p);
+}
+
+// Scroll reveal
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{ if(e.isIntersecting) setTimeout(()=>e.target.classList.add('visible'),i*70); });
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(r=>obs.observe(r));
+</script>
+</body>
+</html>
+
+<!-- FLOATING WHATSAPP -->
+<style>
+.float-wa{position:fixed;bottom:1.8rem;left:1.8rem;z-index:9998;display:flex;align-items:center;text-decoration:none;}
+.float-wa-icon{width:58px;height:58px;background:linear-gradient(135deg,#00c853,#00e676);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,200,83,0.5);position:relative;transition:transform 0.2s;flex-shrink:0;}
+.float-wa:hover .float-wa-icon{transform:scale(1.1);}
+.float-wa-icon svg{width:28px;height:28px;fill:white;}
+.float-wa-icon::before,.float-wa-icon::after{content:'';position:absolute;inset:0;border-radius:50%;border:2px solid #00e676;animation:waPulse 2s ease-out infinite;}
+.float-wa-icon::after{animation-delay:0.8s;}
+@keyframes waPulse{0%{transform:scale(1);opacity:0.8}100%{transform:scale(1.9);opacity:0}}
+.float-wa-label{background:rgba(2,4,8,0.95);border:1px solid rgba(0,200,83,0.4);color:#00e676;font-family:'Cairo',sans-serif;font-size:0.78rem;font-weight:700;padding:0.4rem 0.9rem;border-radius:4px;white-space:nowrap;margin-right:0.7rem;opacity:0;transform:translateX(-8px);transition:opacity 0.25s,transform 0.25s;pointer-events:none;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);}
+.float-wa:hover .float-wa-label{opacity:1;transform:translateX(0);}
+</style>
+<a href="https://wa.me/201032091913?text=مرحبا، عايز أستفسر عن منتج" target="_blank" class="float-wa">
+  <span class="float-wa-label">تكلم معانا دلوقتي!</span>
+  <div class="float-wa-icon">
+    <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  </div>
+</a>
