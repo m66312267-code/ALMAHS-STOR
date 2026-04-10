@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALMAHSMarket — مواقع احترافية</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+/* Toggle switch */
+.toggle-wrap { position:relative; width:40px; height:22px; display:inline-block; flex-shrink:0; }
+.toggle-wrap input { opacity:0; width:0; height:0; }
+.toggle-slider { position:absolute; cursor:pointer; inset:0; background:rgba(255,255,255,0.1); border-radius:22px; transition:.3s; border:1px solid rgba(255,255,255,0.15); }
+.toggle-slider:before { content:''; position:absolute; height:16px; width:16px; left:2px; bottom:2px; background:#fff; border-radius:50%; transition:.3s; }
+.toggle-wrap input:checked + .toggle-slider { background:rgba(34,160,70,0.5); border-color:rgba(34,160,70,0.6); }
+.toggle-wrap input:checked + .toggle-slider:before { transform:translateX(18px); }
+
+/* Gallery preview thumbs */
+.gallery-thumb { width:52px; height:52px; object-fit:cover; border-radius:6px; border:2px solid rgba(255,255,255,0.1); position:relative; cursor:pointer; }
+.gallery-thumb-wrap { position:relative; display:inline-block; }
+.gallery-thumb-remove { position:absolute; top:-4px; right:-4px; width:16px; height:16px; border-radius:50%; background:#ef4444; color:#fff; border:none; cursor:pointer; font-size:9px; display:flex; align-items:center; justify-content:center; line-height:1; }
+
+/* Detail gallery strip */
+.detail-gallery-strip { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+.detail-gallery-thumb { width:60px; height:60px; object-fit:cover; border-radius:8px; border:2px solid rgba(255,255,255,0.1); cursor:pointer; transition:border-color .2s; }
+.detail-gallery-thumb:hover, .detail-gallery-thumb.active { border-color:var(--fire,#22a046); }
+
+/* Locked files badge */
+.files-locked-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(34,160,70,0.12); color:var(--fire,#22a046); border:1px solid rgba(34,160,70,0.25); border-radius:8px; padding:6px 14px; font-size:13px; font-weight:700; margin-bottom:10px; }
+
+/* EXPLOSION LOGO */
+.nav-logo-icon {
+  position: relative !important;
+  width: 48px !important;
+  height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Main burst explosion */
+.nav-logo-icon::before,
+.nav-logo-icon::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  animation: burstWave 0.8s ease-out infinite;
+}
+
+.nav-logo-icon::before {
+  width: 100%;
+  height: 100%;
+  border: 2px solid rgba(34, 160, 70, 0.8);
+  animation-delay: 0s;
+}
+
+.nav-logo-icon::after {
+  width: 140%;
+  height: 140%;
+  border: 1px solid rgba(34, 160, 70, 0.4);
+  animation-delay: 0.2s;
+}
+
+/* Explosion particles */
+.explosion-particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle, #6ee08a, #22a046);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  box-shadow: 0 0 8px rgba(34, 160, 70, 0.8);
+  animation: particleBurst 0.9s ease-out forwards;
+}
+
+.particle-0 { animation-delay: 0s; }
+.particle-1 { animation-delay: 0.08s; }
+.particle-2 { animation-delay: 0.16s; }
+.particle-3 { animation-delay: 0.24s; }
+.particle-4 { animation-delay: 0.32s; }
+.particle-5 { animation-delay: 0.40s; }
+.particle-6 { animation-delay: 0.48s; }
+.particle-7 { animation-delay: 0.56s; }
+
+@keyframes burstWave {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+@keyframes particleBurst {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0);
+    opacity: 0;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- MOBILE MENU OVERLAY -->
+<div id="mobileMenuOverlay" class="mobile-menu-overlay" onclick="closeMobileMenu()"></div>
+
+<!-- MOBILE MENU -->
+<div id="mobileMenu" class="mobile-menu">
+  <a href="#products" onclick="closeMobileMenu()">📦 المنتجات</a>
+  <a href="#reviews" onclick="closeMobileMenu()">💬 الآراء</a>
+  <a href="#" onclick="closeMobileMenu();openAboutPage()">ℹ️ عن المتجر</a>
+  <a href="#contact" onclick="closeMobileMenu()">📞 تواصل</a>
+  <div class="mobile-menu-btns">
+    <button class="nav-btn-ghost" id="userPanelNavBtnMobile" onclick="closeMobileMenu();openUserPanel()" style="display:none;width:100%;justify-content:center;">📊 مشاريعي</button>
+    <button class="nav-btn-primary" style="width:100%;justify-content:center;" onclick="closeMobileMenu();openPwdModal()">⚙️ لوحة التحكم</button>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-icon">
+      <svg width="32" height="32" viewBox="0 0 40 40" style="z-index: 2; position: relative;">
+        <defs>
+          <linearGradient id="navGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#22a046"/>
+            <stop offset="100%" style="stop-color:#34c75a"/>
+          </linearGradient>
+        </defs>
+        <circle cx="20" cy="20" r="18" fill="url(#navGrad)" opacity="0.2"/>
+        <circle cx="20" cy="20" r="16" stroke="url(#navGrad)" stroke-width="1.5" fill="none"/>
+        <text x="20" y="26" font-size="18" font-weight="700" fill="url(#navGrad)" text-anchor="middle">A</text>
+      </svg>
+      <div class="explosion-particles">
+        <span class="particle particle-0" style="--tx: 45px; --ty: 0px;"></span>
+        <span class="particle particle-1" style="--tx: 32px; --ty: 32px;"></span>
+        <span class="particle particle-2" style="--tx: 0px; --ty: 45px;"></span>
+        <span class="particle particle-3" style="--tx: -32px; --ty: 32px;"></span>
+        <span class="particle particle-4" style="--tx: -45px; --ty: 0px;"></span>
+        <span class="particle particle-5" style="--tx: -32px; --ty: -32px;"></span>
+        <span class="particle particle-6" style="--tx: 0px; --ty: -45px;"></span>
+        <span class="particle particle-7" style="--tx: 32px; --ty: -32px;"></span>
+      </div>
+    </div>
+    <span>ALMAHS</span>Market
+  </a>
+  <ul class="nav-links">
+    <li><a href="#products">المنتجات</a></li>
+    <li><a href="#reviews">الآراء</a></li>
+    <li><a href="#" onclick="openAboutPage();return false;">عن المتجر</a></li>
+    <li><a href="#contact">تواصل</a></li>
+  </ul>
+  <div class="nav-right">
+
+    <button class="nav-btn-ghost" id="userPanelNavBtn" onclick="openUserPanel()" style="display:none;">
+      📊 مشاريعي
+    </button>
+    <button class="nav-btn-primary" onclick="openPwdModal()">⚙️ <span>إدارة</span></button>
+    <button class="hamburger" onclick="toggleMobileMenu()" aria-label="القائمة">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      مرحبا بك في ALMAHSMarket
+    </div>
+    <h1 class="hero-title">
+      مواقع وخدمات <span class="grad">احترافية</span><br>للسوق المصري
+    </h1>
+    <p class="hero-sub">نقدم أفضل التصاميم والخدمات البرمجية لتطوير مشروعك الرقمي بجودة عالية وأسعار منافسة</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+        تصفح المنتجات ↓
+      </button>
+      <button class="btn-outline" onclick="openUserUploadModal()">
+        📤 رفع مشروعك
+      </button>
+    </div>
+    <div class="hero-trust">
+      <div class="trust-item"><div class="trust-tick">✓</div> منتجات متنوعة</div>
+      <div class="trust-item"><div class="trust-tick">✓</div> جودة عالية</div>
+      <div class="trust-item"><div class="trust-tick">✓</div> دعم فني 24/7</div>
+    </div>
+  </div>
+
+</section>
+
+<!-- STATS -->
+<div class="stats-strip">
+  <div class="stats-inner">
+    <div class="stat"><span class="stat-num" id="stat-products"><em>0</em>+</span><span class="stat-label">منتجات متاحة</span></div>
+    <div class="stat"><span class="stat-num" id="stat-orders"><em>0</em></span><span class="stat-label">أوردرات مكتملة</span></div>
+    <div class="stat"><span class="stat-num" id="stat-reviews"><em>0</em></span><span class="stat-label">آراء من العملاء</span></div>
+    <div class="stat"><span class="stat-num">✓</span><span class="stat-label">ضمان الرضا</span></div>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<section id="categoriesSection" class="cats-section" style="display:none;">
+  <div class="cats-inner">
+    <div class="section-header">
+      <div class="eyebrow"><div class="eyebrow-line"></div>الأقسام</div>
+      <h2 class="section-title">تصفح حسب القسم</h2>
+      <p class="section-sub">اختر القسم اللي يناسبك وشوف كل المنتجات فيه</p>
+    </div>
+    <div class="cats-grid" id="catsGrid"></div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section id="products" class="products-section">
+  <div class="prod-inner">
+    <div class="section-header">
+      <div class="eyebrow"><div class="eyebrow-line"></div>المنتجات</div>
+      <h2 class="section-title">اختر ما يناسبك</h2>
+      <p class="section-sub">تصاميم وخدمات برمجية محترفة بأسعار منافسة — اضغط على أي منتج للاستعراض والطلب</p>
+    </div>
+    <!-- SEARCH -->
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="productSearch" placeholder="ابحث عن منتج...">
+    </div>
+    <div class="products-grid" id="productsGrid"></div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews" class="reviews-section">
+  <div class="reviews-inner">
+    <div class="section-header">
+      <div class="eyebrow"><div class="eyebrow-line"></div>الآراء</div>
+      <h2 class="section-title">ماذا يقول العملاء</h2>
+      <p class="section-sub">آراء حقيقية من عملائنا الكرام</p>
+    </div>
+    <div class="reviews-container" id="reviewsContainer"></div>
+    <div style="text-align:center;margin-top:48px;">
+      <button class="btn-primary" onclick="openRevModal()">💬 أضف رأيك</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer" id="contact">
+
+  <!-- TOP GLOW LINE -->
+  <div class="footer-topline"></div>
+
+  <!-- BRAND HERO ROW - NEW STYLE -->
+  <div class="footer-brand-row">
+    <div class="footer-brand-center">
+      <h1 class="footer-brand-title">
+        <span class="fbr-a">A</span><span class="fbr-l">L</span><span class="fbr-m">M</span><span class="fbr-a2">A</span><span class="fbr-h">H</span><span class="fbr-s">S</span>
+        <span class="fbr-decoration">✨</span>
+        <span class="fbr-st">ST</span><span class="fbr-or">OR</span>
+      </h1>
+      <div class="footer-hashtags">
+        <span>#تطبيقاتك</span><span>#راحتك</span><span>#ثقتك</span>
+      </div>
+      <div class="footer-social-grid">
+        <a id="fsocTiktok" href="#" class="fsoc-icon fsoc-tik" title="تيك توك" target="_blank">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.05a8.16 8.16 0 004.77 1.52V7.12a4.85 4.85 0 01-1-.43z"/></svg>
+        </a>
+        <a id="fsocInstagram" href="#" class="fsoc-icon fsoc-insta" title="انستغرام" target="_blank">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        </a>
+        <a id="fsocWhatsapp" href="https://wa.me/201063786533" target="_blank" class="fsoc-icon fsoc-wa2" title="واتساب">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.554 4.103 1.523 5.824L.057 23.997l6.305-1.654A11.954 11.954 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.007-1.374l-.36-.214-3.733.979 1.001-3.641-.235-.374A9.818 9.818 0 1112 21.818z"/></svg>
+        </a>
+        <a id="fsocFacebook" href="#" class="fsoc-icon fsoc-fb2" title="فيسبوك" target="_blank">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </a>
+        <a id="fsocTwitter" href="#" class="fsoc-icon" style="background:linear-gradient(135deg,#1da1f2,#0d8ecf);color:#fff;" title="تويتر / X" target="_blank">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.258 5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+        <a id="fsocYoutube" href="#" class="fsoc-icon" style="background:linear-gradient(135deg,#ff0000,#cc0000);color:#fff;" title="يوتيوب" target="_blank">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
+        </a>
+      </div>
+      <div class="footer-divider-center"></div>
+      <p class="footer-credit">< Developed By > ALMAHS < All Copy Rights Reserved @2026 ></p>
+    </div>
+  </div>
+
+  <!-- DIVIDER -->
+  <div class="footer-divider-wrap">
+    <div class="footer-divider-line"></div>
+  </div>
+
+  <!-- MAIN FOOTER GRID -->
+  <div class="footer-content">
+    <div class="footer-section footer-about">
+      <p class="footer-about-text">منصة متخصصة في تقديم الخدمات والمنتجات الرقمية للسوق المصري بأعلى معايير الجودة والاحترافية.</p>
+      <div class="footer-badges">
+        <div class="footer-badge"><span>✓</span> جودة مضمونة</div>
+        <div class="footer-badge"><span>✓</span> دعم 24 ساعه</div>
+        <div class="footer-badge"><span>✓</span> تسليم سريع</div>
+      </div>
+    </div>
+
+    <div class="footer-section">
+      <h4 class="footer-heading"><span class="footer-heading-line"></span>روابط سريعة</h4>
+      <ul class="footer-links">
+        <li><a href="#products"><span>›</span> المنتجات</a></li>
+        <li><a href="#reviews"><span>›</span> آراء العملاء</a></li>
+        <li><a href="#contact"><span>›</span> تواصل معنا</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h4 class="footer-heading"><span class="footer-heading-line"></span>تواصل معنا</h4>
+      <div class="footer-contact-items">
+        <a href="/cdn-cgi/l/email-protection#204d161613111212161760474d41494c0e434f4d" class="footer-contact-item">
+          <div class="footer-contact-icon">✉</div>
+          <span><span class="__cf_email__" data-cfemail="0b663d3d383a39393d3c4b6c666a626725686466">[email&#160;protected]</span></span>
+        </a>
+        <a href="tel:+201063786533" class="footer-contact-item">
+          <div class="footer-contact-icon">📞</div>
+          <span dir="ltr">+201063786533</span>
+        </a>
+        <a id="footerWaLink" href="https://wa.me/201063786533" target="_blank" class="footer-wa-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.554 4.103 1.523 5.824L.057 23.997l6.305-1.654A11.954 11.954 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.007-1.374l-.36-.214-3.733.979 1.001-3.641-.235-.374A9.818 9.818 0 1112 21.818z"/></svg>
+          واتساب مباشر
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM BAR -->
+  <div class="footer-bottom">
+    <div class="footer-bottom-inner">
+      <p class="footer-copy">© 2026 ALMAHSMarket — جميع الحقوق محفوظة</p>
+      <p class="footer-dev">
+        صُمِّم وطُوِّر بواسطة
+        <span class="footer-dev-name">ALMAHS</span>
+        <span class="footer-dev-fire">🔥</span>
+      </p>
+    </div>
+  </div>
+
+</footer>
+
+<!-- CATEGORY PAGE -->
+<div id="categoryPage" style="display:none;position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:auto;padding-top:0;"></div>
+
+<!-- ABOUT PAGE -->
+<div id="aboutPage" style="display:none;position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:auto;padding-top:0;"></div>
+
+<!-- PRODUCT DETAIL PAGE -->
+<div id="productDetailPage"></div>
+
+<!-- ORDER MODAL (واتساب مباشر) -->
+<div id="orderOverlay" class="modal-overlay" onclick="closeOrderModal()">
+  <div class="modal-content" style="max-width:420px;" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>📋 تأكيد الطلب</h3>
+      <button class="close-btn" onclick="closeOrderModal()">✕</button>
+    </div>
+    <div style="padding:0 4px 8px;">
+      <!-- Product summary -->
+      <div id="orderProductSummary" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px;margin-bottom:16px;display:flex;align-items:center;gap:12px;">
+        <div id="orderProductImg" style="width:56px;height:56px;border-radius:8px;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;font-size:24px;">📦</div>
+        <div>
+          <div id="orderProductName" style="font-weight:700;color:var(--text);font-size:15px;"></div>
+          <div id="orderProductPrice" style="color:var(--fire,#22a046);font-weight:700;font-size:16px;margin-top:4px;"></div>
+        </div>
+      </div>
+
+      <input type="text" id="orderName" placeholder="اسمك الكريم *" class="form-input">
+      <input type="tel" id="orderPhone" placeholder="رقم تليفونك *" class="form-input" dir="ltr">
+
+      <!-- COUPON FIELD -->
+      <div style="display:flex;gap:8px;align-items:stretch;margin-bottom:4px;">
+        <input type="text" id="orderCouponInput" placeholder="كود الخصم (اختياري)" class="form-input" style="margin:0;flex:1;text-transform:uppercase;letter-spacing:1px;" oninput="this.value=this.value.toUpperCase()">
+        <button onclick="applyCoupon()" style="background:rgba(34,160,70,0.12);color:var(--fire,#22a046);border:1px solid rgba(34,160,70,0.3);border-radius:10px;padding:0 16px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;font-family:inherit;">تطبيق</button>
+      </div>
+      <div id="couponFeedback" style="display:none;font-size:12px;font-weight:700;padding:8px 12px;border-radius:8px;margin-bottom:8px;"></div>
+
+      <button onclick="confirmOrder()" style="width:100%;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border:none;padding:14px;border-radius:12px;font-weight:700;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.554 4.103 1.523 5.824L.057 23.997l6.305-1.654A11.954 11.954 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.007-1.374l-.36-.214-3.733.979 1.001-3.641-.235-.374A9.818 9.818 0 1112 21.818z"/></svg>
+        اطلب عبر واتساب
+      </button>
+      <p style="text-align:center;font-size:11px;color:var(--text-dim);margin-top:10px;">هيتفتح معك واتساب تلقائياً لتأكيد الطلب</p>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEW MODAL -->
+<div id="revOverlay" class="modal-overlay" onclick="closeRevModal()">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>💬 أضف رأيك</h3>
+      <button class="close-btn" onclick="closeRevModal()">✕</button>
+    </div>
+    <div id="revFormBody" style="padding:20px;">
+      <input type="text" id="revName" placeholder="اسمك" class="form-input">
+      <input type="text" id="revProduct" placeholder="اسم المنتج (اختياري)" class="form-input">
+      <div style="margin:4px 0 16px;">
+        <label style="display:block;margin-bottom:10px;font-weight:600;font-size:14px;color:var(--text-sub);">التقييم:</label>
+        <div class="stars-container">
+          <button class="star-btn" onclick="setStar(1)">★</button>
+          <button class="star-btn" onclick="setStar(2)">★</button>
+          <button class="star-btn" onclick="setStar(3)">★</button>
+          <button class="star-btn" onclick="setStar(4)">★</button>
+          <button class="star-btn" onclick="setStar(5)">★</button>
+        </div>
+      </div>
+      <textarea id="revText" placeholder="شاركنا رأيك..." class="form-input" rows="4"></textarea>
+      <button class="btn-primary" onclick="submitReview()" style="width:100%;justify-content:center;">إرسال الرأي →</button>
+    </div>
+    <div id="revSuccessMsg" style="display:none;text-align:center;padding:50px 20px;">
+      <div style="font-size:56px;margin-bottom:16px;">✅</div>
+      <p style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px;">شكراً لك!</p>
+      <p style="color:var(--text-sub);">سيتم نشر رأيك بعد الموافقة</p>
+    </div>
+  </div>
+</div>
+
+<!-- PASSWORD MODAL -->
+<div id="pwdOverlay" class="modal-overlay" onclick="closePwdModal()">
+  <div class="modal-content" style="max-width:400px;" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>🔐 لوحة التحكم</h3>
+      <button class="close-btn" onclick="closePwdModal()">✕</button>
+    </div>
+    <div style="padding:24px;">
+      <input type="password" id="pwdInput" placeholder="أدخل كلمة المرور" class="form-input" style="font-size:16px;">
+      <button class="btn-primary" onclick="checkPwd()" style="width:100%;justify-content:center;">دخول →</button>
+    </div>
+  </div>
+</div>
+
+<!-- USER UPLOAD MODAL -->
+<div id="userUploadOverlay" class="modal-overlay" onclick="if(event.target===this) closeUserUploadModal()"></div>
+<div id="userUploadModal" class="modal-content" style="display:none;max-width:500px;">
+  <div class="modal-header">
+    <h2>📤 رفع مشروعك</h2>
+    <button class="modal-close" onclick="closeUserUploadModal()">✕</button>
+  </div>
+  <div class="modal-body" style="max-height:80vh;overflow-y:auto;">
+    <div id="userUploadCodeSection">
+      <div style="margin-bottom:20px;">
+        <label style="display:block;margin-bottom:8px;font-weight:700;color:var(--text);">🔑 كود الوصول</label>
+        <p style="color:var(--text-dim);font-size:13px;margin-bottom:8px;">اطلب الكود من الإدارة للرفع</p>
+        <input type="text" id="userUploadCode" placeholder="أدخل الكود..." class="form-input" style="margin-bottom:8px;">
+        <button class="btn-primary" onclick="verifyUserUploadCode()" style="width:100%;justify-content:center;">✓ تحقق</button>
+      </div>
+    </div>
+    
+    <div id="userUploadForm" style="display:none;">
+      <div style="margin-bottom:16px;">
+        <label style="display:block;margin-bottom:8px;font-weight:700;color:var(--text);">📛 اسم المشروع</label>
+        <input type="text" id="userProjName" placeholder="مثال: موقع متجر إلكتروني" class="form-input">
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <label style="display:block;margin-bottom:8px;font-weight:700;color:var(--text);">💬 وصف المشروع</label>
+        <textarea id="userProjDesc" placeholder="اشرح المشروع..." class="form-input" style="min-height:80px;"></textarea>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <label style="display:block;margin-bottom:8px;font-weight:700;color:var(--text);">💰 السعر (ج.م)</label>
+        <input type="number" id="userProjPrice" placeholder="1000" class="form-input" min="1">
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <label style="display:block;margin-bottom:8px;font-weight:700;color:var(--text);">🏷️ القسم</label>
+        <select id="userProjCategory" class="form-input" style="margin:0;cursor:pointer;">
+          <option value="">— اختر قسم —</option>
+        </select>
+        <p style="font-size:11px;color:var(--text-dim);margin-top:6px;">لو مش عارف القسم اسأل الإدارة</p>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <label style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span style="color:var(--text);">🔒 الملفات مقفولة (تحتاج شراء لتحميلها)</span>
+          <div class="toggle-wrap">
+            <input type="checkbox" id="userFilesLock" checked>
+            <span class="toggle-slider"></span>
+          </div>
+        </label>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <label style="display:block;margin-bottom:8px;font-weight:700;color:var(--text);">📎 ملفات المشروع</label>
+        <div class="upload-area" id="userUploadFilesArea">
+          <div class="upload-area-icon">📁</div>
+          <div class="upload-area-text">اسحب أو اختر الملفات</div>
+        </div>
+        <input type="file" id="userProjFiles" multiple style="display:none;">
+        <div id="userPendingFilesList" class="files-list"></div>
+      </div>
+
+      <button class="btn-primary" onclick="submitUserProject()" style="width:100%;justify-content:center;">✅ رفع المشروع</button>
+    </div>
+  </div>
+</div>
+
+<!-- USER PANEL -->
+<div id="userPanel" class="admin-panel" style="display:none;">
+  <div class="admin-header">
+    <h2>📊 لوحة مشاريعي</h2>
+    <button class="close-btn" onclick="closeUserPanel()">✕</button>
+  </div>
+
+  <div class="admin-body" style="padding:20px;">
+    <div style="margin-bottom:20px;">
+      <p style="color:var(--text-sub);margin-bottom:16px;">👋 هنا تقدر تشوف وتدير كل مشاريعك اللي رفعتها</p>
+      <button class="btn-primary" onclick="openUserUploadModal();closeUserPanel()" style="width:100%;justify-content:center;">➕ رفع مشروع جديد</button>
+    </div>
+
+    <h3>📦 مشاريعي</h3>
+    <div id="userProjectsList"></div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminPanel" class="admin-panel" style="display:none;">
+  <div class="admin-header">
+    <h2>🎛️ لوحة التحكم</h2>
+    <button class="close-btn" onclick="closeAdmin()">✕</button>
+  </div>
+
+  <div class="admin-tabs">
+    <button class="tab-btn active" onclick="switchAdminTab('products',this)">📦 المنتجات</button>
+    <button class="tab-btn" onclick="switchAdminTab('orders',this)">🧾 الأوردرات</button>
+    <button class="tab-btn" onclick="switchAdminTab('reviews',this)">
+      💬 الآراء <span id="tabRevCount" class="tab-count">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchAdminTab('categories',this)">📂 الأقسام</button>
+    <button class="tab-btn" onclick="switchAdminTab('settings',this)">⚙️ الإعدادات</button>
+  </div>
+
+  <div class="admin-body">
+    <!-- PRODUCTS TAB -->
+    <div id="productsTab" class="admin-tab active">
+      <h3>➕ إضافة منتج جديد</h3>
+      <div class="form-group" style="border:1px solid var(--border);border-radius:var(--radius);margin-bottom:32px;background:var(--bg-card);">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <input type="text" id="prodName" placeholder="اسم المنتج" class="form-input" style="margin-bottom:0;">
+          <input type="number" id="prodPrice" placeholder="السعر (ج.م)" class="form-input" style="margin-bottom:0;">
+        </div>
+        <div style="margin-top:12px;">
+          <textarea id="prodDesc" placeholder="وصف المنتج التفصيلي..." class="form-input" rows="3" style="margin-bottom:0;resize:vertical;"></textarea>
+        </div>
+        <div style="margin-top:12px;">
+          <select id="prodCategory" class="form-input" style="margin-bottom:0;cursor:pointer;">
+            <option value="">— اختر القسم —</option>
+          </select>
+        </div>
+        <!-- صورة الغلاف + صور إضافية -->
+        <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;">
+          <div>
+            <label style="display:block;margin-bottom:8px;font-size:13px;font-weight:700;color:var(--text-sub);">🖼️ صورة الغلاف (رئيسية)</label>
+            <input type="file" id="prodImage" accept="image/*" class="form-input" style="margin-bottom:8px;">
+            <div class="img-preview-wrap"><img id="imagePreview" style="display:none;"></div>
+          </div>
+          <div>
+            <label style="display:block;margin-bottom:8px;font-size:13px;font-weight:700;color:var(--text-sub);">🖼️ صور إضافية للاستعراض</label>
+            <input type="file" id="prodGallery" accept="image/*" multiple class="form-input" style="margin-bottom:8px;">
+            <div id="galleryPreviewList" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;"></div>
+          </div>
+        </div>
+
+        <!-- ملفات المشروع + خيار القفل -->
+        <div style="margin-top:12px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <label style="font-size:13px;font-weight:700;color:var(--text-sub);">📎 ملفات المشروع</label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:700;color:var(--text-sub);">
+              <span id="filesLockLabel">🔓 تحميل مجاني</span>
+              <div class="toggle-wrap">
+                <input type="checkbox" id="prodFilesLock" onchange="toggleFilesLockLabel()">
+                <span class="toggle-slider"></span>
+              </div>
+            </label>
+          </div>
+          <div class="upload-area" id="uploadArea">
+            <div class="upload-area-icon">📁</div>
+            <div class="upload-area-text">اسحب الملفات هنا أو اضغط للاختيار</div>
+            <div class="upload-area-sub">PDF, ZIP, APK, DOC, PSD وغيرها</div>
+          </div>
+          <input type="file" id="prodFiles" multiple accept=".pdf,.zip,.rar,.doc,.docx,.xls,.xlsx,.psd,.ai,.fig,.html,.css,.js,.apk,.aab,.ipa,.mp4,.mp3,.txt" style="display:none;">
+          <div id="pendingFilesList" class="files-list"></div>
+        </div>
+
+        <div style="margin-top:16px;">
+          <button class="btn-primary" onclick="addProduct()" style="width:100%;justify-content:center;">✅ إضافة المنتج</button>
+        </div>
+      </div>
+
+      <h3>📦 المنتجات الحالية</h3>
+      <div id="adminProductsList"></div>
+    </div>
+
+    <!-- CATEGORIES TAB -->
+    <div id="categoriesTab" class="admin-tab" style="display:none;">
+      <h3>➕ إضافة قسم جديد</h3>
+      <div class="form-group" style="border:1px solid var(--border);border-radius:var(--radius);margin-bottom:32px;background:var(--bg-card);">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:var(--text-sub);margin-bottom:6px;">📛 اسم القسم *</label>
+            <input type="text" id="newCatName" placeholder="مثال: مواقع، تطبيقات..." class="form-input" style="margin:0;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:var(--text-sub);margin-bottom:6px;">😊 أيقونة (إيموجي)</label>
+            <input type="text" id="newCatIcon" placeholder="🌐" class="form-input" style="margin:0;">
+          </div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="display:block;font-size:12px;font-weight:700;color:var(--text-sub);margin-bottom:6px;">💬 وصف القسم</label>
+          <input type="text" id="newCatDesc" placeholder="وصف قصير للقسم..." class="form-input" style="margin:0;">
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+          <label style="font-size:12px;font-weight:700;color:var(--text-sub);">🎨 لون القسم:</label>
+          <input type="color" id="newCatColor" value="#22a046" style="width:40px;height:36px;border:1px solid var(--border);border-radius:8px;cursor:pointer;background:none;padding:2px;">
+        </div>
+        <button class="btn-primary" onclick="addAdminCategory()" style="width:100%;justify-content:center;">✅ إضافة القسم</button>
+      </div>
+      <h3>📂 الأقسام الحالية</h3>
+      <div id="adminCatsList"></div>
+    </div>
+
+    <!-- ORDERS TAB -->
+    <div id="ordersTab" class="admin-tab" style="display:none;">
+      <h3>🧾 الأوردرات</h3>
+      <div id="adminOrdersList"></div>
+    </div>
+
+    <!-- REVIEWS TAB -->
+    <div id="reviewsTab" class="admin-tab" style="display:none;">
+      <h3>⏳ الآراء المعلقة</h3>
+      <div id="pendingRevsList"></div>
+      <h3 style="margin-top:40px;">✅ الآراء المنشورة</h3>
+      <div id="approvedRevsList"></div>
+    </div>
+
+    <!-- SETTINGS TAB -->
+    <div id="settingsTab" class="admin-tab" style="display:none;">
+      <h3>⚙️ الإعدادات</h3>
+
+      <div class="settings-section">
+        <h4>📲 واتساب</h4>
+        <p class="settings-hint">رقم الواتساب بتاعك — هيتواصل معاك العميل بعد الشراء مباشرة</p>
+        <input type="tel" id="settingsWhatsapp" placeholder="مثال: 201001234567 (بدون + أو صفر)" class="form-input" dir="ltr">
+      </div>
+
+      <div class="settings-section">
+        <h4>📱 روابط السوشيال ميديا</h4>
+        <p class="settings-hint">الروابط دي هتظهر في الفوتر — اتركها فاضية لو مش عايزها تظهر</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;background:#2d3436;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.05a8.16 8.16 0 004.77 1.52V7.12a4.85 4.85 0 01-1-.43z"/></svg>
+            </div>
+            <input type="url" id="socialTiktok" placeholder="https://tiktok.com/@..." class="form-input" style="margin:0;flex:1;" dir="ltr">
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;background:linear-gradient(135deg,#f09433,#dc2743,#bc1888);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </div>
+            <input type="url" id="socialInstagram" placeholder="https://instagram.com/..." class="form-input" style="margin:0;flex:1;" dir="ltr">
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;background:#1877f2;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            </div>
+            <input type="url" id="socialFacebook" placeholder="https://facebook.com/..." class="form-input" style="margin:0;flex:1;" dir="ltr">
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;background:linear-gradient(135deg,#1da1f2,#0d8ecf);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.258 5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </div>
+            <input type="url" id="socialTwitter" placeholder="https://x.com/..." class="form-input" style="margin:0;flex:1;" dir="ltr">
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;background:linear-gradient(135deg,#ff0000,#cc0000);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
+            </div>
+            <input type="url" id="socialYoutube" placeholder="https://youtube.com/@..." class="form-input" style="margin:0;flex:1;" dir="ltr">
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h4>🔐 تغيير كلمة المرور</h4>
+        <p class="settings-hint">اترك فاضي لو مش عايز تغيرها</p>
+        <input type="password" id="settingsNewPwd" placeholder="كلمة المرور الجديدة" class="form-input">
+        <input type="password" id="settingsConfirmPwd" placeholder="تأكيد كلمة المرور" class="form-input">
+      </div>
+
+      <div class="settings-section">
+        <h4>🔑 كود الوصول للزر</h4>
+        <p class="settings-hint">الشخص اللي عايزه يشوف زر الإدارة — بعتهوله الكود ده، يضغط 5 مرات على اللوجو ويكتبه</p>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="text" id="settingsAccessCode" placeholder="اكتب كود من اختيارك..." class="form-input" style="margin:0;flex:1;letter-spacing:2px;">
+          <button class="btn-primary" onclick="saveAccessCode()" style="white-space:nowrap;padding:10px 16px;">💾 حفظ</button>
+        </div>
+        <p class="settings-hint" style="margin-top:8px;color:var(--text-dim);">الكود الحالي: <span id="currentAccessCode" style="color:var(--gold);font-weight:700;"></span></p>
+      </div>
+
+
+      <button class="btn-primary" onclick="saveAdminSettings()" style="width:100%;justify-content:center;margin-top:8px;">💾 حفظ الإعدادات</button>
+
+      <div class="settings-section" style="margin-top:32px;">
+        <h4>🏷️ كوبونات الخصم</h4>
+        <p class="settings-hint">أضف كوبونات للعملاء — نوع الخصم إما نسبة مئوية (%) أو مبلغ ثابت (ج.م)</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end;margin-bottom:12px;">
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:var(--text-sub);margin-bottom:6px;">كود الكوبون</label>
+            <input type="text" id="newCouponCode" placeholder="مثال: ALMAHS20" class="form-input" style="margin:0;text-transform:uppercase;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:var(--text-sub);margin-bottom:6px;">قيمة الخصم</label>
+            <input type="number" id="newCouponValue" placeholder="20" class="form-input" style="margin:0;" min="1">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:700;color:var(--text-sub);margin-bottom:6px;">نوع الخصم</label>
+            <select id="newCouponType" class="form-input" style="margin:0;">
+              <option value="percent">نسبة % </option>
+              <option value="fixed">مبلغ ثابت ج.م</option>
+            </select>
+          </div>
+          <button class="btn-primary" onclick="addCoupon()" style="padding:10px 16px;white-space:nowrap;">➕ أضف</button>
+        </div>
+        <div id="couponsList"></div>
+      </div>
+    </div>
+
+  </div><!-- end admin-body -->
+</div><!-- end adminPanel -->
+
+<!-- WHATSAPP FLOATING CHAT -->
+<!-- WHATSAPP FLOATING CHAT -->
+<!-- Bubble popup -->
+<div class="wa-bubble" id="waBubble">
+  <div class="wa-bubble-header">
+    <div class="wa-bubble-avatar">
+      <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.554 4.103 1.523 5.824L.057 23.997l6.305-1.654A11.954 11.954 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.007-1.374l-.36-.214-3.733.979 1.001-3.641-.235-.374A9.818 9.818 0 1112 21.818z"/></svg>
+    </div>
+    <div class="wa-bubble-info">
+      <div class="wa-bubble-name">ALMAHSMarket</div>
+      <div class="wa-bubble-status"><span class="wa-online-dot"></span> متصل الآن</div>
+    </div>
+    <button class="wa-bubble-close" onclick="toggleWaBubble()" aria-label="إغلاق">✕</button>
+  </div>
+  <div class="wa-bubble-body">
+    <div class="wa-message">
+      <div class="wa-message-text">👋 أهلاً! كيف نقدر نساعدك؟<br>اضغط للتواصل معنا مباشرة على واتساب ✅</div>
+      <div class="wa-message-time">الآن</div>
+    </div>
+  </div>
+  <a id="waFloatingLink" href="#" target="_blank" class="wa-bubble-cta" onclick="openWaChat()">
+    <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.554 4.103 1.523 5.824L.057 23.997l6.305-1.654A11.954 11.954 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.007-1.374l-.36-.214-3.733.979 1.001-3.641-.235-.374A9.818 9.818 0 1112 21.818z"/></svg>
+    ابدأ المحادثة
+  </a>
+</div>
+
+<!-- Main WA button -->
+<div id="waFloating" class="wa-floating">
+  <div class="wa-pulse"></div>
+  <button class="wa-btn" id="waBtn" onclick="toggleWaBubble()" aria-label="تواصل واتساب">
+    <div class="wa-btn-icon wa-icon-chat">
+      <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.554 4.103 1.523 5.824L.057 23.997l6.305-1.654A11.954 11.954 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.007-1.374l-.36-.214-3.733.979 1.001-3.641-.235-.374A9.818 9.818 0 1112 21.818z"/></svg>
+    </div>
+    <div class="wa-btn-icon wa-icon-close" style="display:none;">✕</div>
+  </button>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast"></div>
+
+<script src="script.js"></script>
+
+<!-- EDIT PRODUCT MODAL -->
+<div id="editProductOverlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.75);align-items:center;justify-content:center;padding:16px;" onclick="if(event.target===this)closeEditProduct()">
+  <div style="background:var(--bg-card,#1a1a1a);border:1px solid var(--border,rgba(255,255,255,0.1));border-radius:16px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;padding:24px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <h3 style="margin:0;color:var(--text,#fff);font-size:18px;">✏️ تعديل المنتج</h3>
+      <button onclick="closeEditProduct()" style="background:rgba(255,255,255,0.08);border:none;color:var(--text,#fff);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;">✕</button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div>
+        <label style="display:block;font-size:12px;font-weight:700;color:var(--text-sub,#aaa);margin-bottom:6px;">📛 اسم المنتج</label>
+        <input type="text" id="editProdName" class="form-input" style="margin:0;">
+      </div>
+      <div>
+        <label style="display:block;font-size:12px;font-weight:700;color:var(--text-sub,#aaa);margin-bottom:6px;">💰 السعر (ج.م)</label>
+        <input type="number" id="editProdPrice" class="form-input" style="margin:0;">
+      </div>
+    </div>
+
+    <div style="margin-bottom:12px;">
+      <label style="display:block;font-size:12px;font-weight:700;color:var(--text-sub,#aaa);margin-bottom:6px;">💬 الوصف</label>
+      <textarea id="editProdDesc" class="form-input" rows="3" style="margin:0;resize:vertical;"></textarea>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div>
+        <label style="display:block;font-size:12px;font-weight:700;color:var(--text-sub,#aaa);margin-bottom:6px;">🏷️ الفئة</label>
+        <input type="text" id="editProdCategory" class="form-input" style="margin:0;">
+      </div>
+      <div>
+        <label style="display:block;font-size:12px;font-weight:700;color:var(--text-sub,#aaa);margin-bottom:6px;">📊 حالة المنتج</label>
+        <select id="editProdStatus" class="form-input" style="margin:0;cursor:pointer;">
+          <option value="متاح">● متاح</option>
+          <option value="نفذ">● نفذ</option>
+          <option value="قريباً">● قريباً</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="margin-bottom:12px;">
+      <label style="display:block;font-size:12px;font-weight:700;color:var(--text-sub,#aaa);margin-bottom:6px;">🖼️ تغيير الصورة (اختياري)</label>
+      <input type="file" id="editProdImage" accept="image/*" class="form-input" style="margin:0 0 8px 0;">
+      <img id="editImagePreview" style="display:none;width:100%;max-height:150px;object-fit:cover;border-radius:8px;border:1px solid var(--border,rgba(255,255,255,0.1));">
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <label style="display:block;font-size:12px;font-weight:700;color:var(--text-sub,#aaa);margin-bottom:6px;">📝 ملاحظة داخلية (مش بتظهر للعملاء)</label>
+      <textarea id="editProdNote" class="form-input" rows="2" placeholder="ملاحظاتك على المنتج..." style="margin:0;resize:vertical;"></textarea>
+    </div>
+
+    <div style="display:flex;gap:10px;">
+      <button onclick="saveEditProduct()" style="flex:1;background:linear-gradient(135deg,#22a046,#ff8c00);color:#fff;border:none;padding:12px;border-radius:10px;font-weight:700;font-size:15px;cursor:pointer;">💾 حفظ التعديلات</button>
+      <button onclick="closeEditProduct()" style="background:rgba(255,255,255,0.08);color:var(--text,#fff);border:1px solid var(--border,rgba(255,255,255,0.1));padding:12px 20px;border-radius:10px;cursor:pointer;">إلغاء</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
