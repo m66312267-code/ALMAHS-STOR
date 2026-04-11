@@ -653,9 +653,25 @@ async function loadSettings() {
   try {
     const data = await sbFetch('settings?id=eq.1');
     const s = data && data[0] ? data[0] : { id: 1, whatsapp: '', password_hash: '', access_code: '' };
+
+    // فك JSON لـ about_info
     if (s.about_info && typeof s.about_info === 'string') {
       try { s.aboutInfo = JSON.parse(s.about_info); } catch(e) { s.aboutInfo = {}; }
-    }
+    } else { s.aboutInfo = s.aboutInfo || {}; }
+
+    // ★ استرجاع welcome_title / welcome_msg / order_msg من about_info
+    // (محفوظين هناك عشان Supabase مش عنده أعمدة منفصلة ليهم)
+    s.welcome_title = s.aboutInfo._welcome_title || '';
+    s.welcome_msg   = s.aboutInfo._welcome_msg   || '';
+    s.order_msg     = s.aboutInfo._order_msg     || '';
+
+    // نظّف المفاتيح الداخلية من aboutInfo قبل الاستخدام في الـ UI
+    const cleanAboutInfo = { ...s.aboutInfo };
+    delete cleanAboutInfo._welcome_title;
+    delete cleanAboutInfo._welcome_msg;
+    delete cleanAboutInfo._order_msg;
+    s.aboutInfo = cleanAboutInfo;
+
     // social: جرب من Supabase أولاً، لو فاضي جيب من localStorage
     if (s.social && typeof s.social === 'string') {
       try { s.social = JSON.parse(s.social); } catch(e) { s.social = {}; }
@@ -664,30 +680,39 @@ async function loadSettings() {
     if (!hasSocial) {
       try { const local = localStorage.getItem('mahsmarket_social'); if (local) s.social = JSON.parse(local); } catch(e) {}
     }
+
     return s;
   } catch(e) { return { id: 1, whatsapp: '', password_hash: '', access_code: '' }; }
 }
 async function saveSettings() {
-  // احفظ السوشيال في localStorage كـ backup قبل أي حاجة
+  // احفظ السوشيال في localStorage كـ backup
   if (settings.social && Object.values(settings.social).some(v => v)) {
     try { localStorage.setItem('mahsmarket_social', JSON.stringify(settings.social)); } catch(e) {}
   }
-  const payload = {
-    whatsapp: settings.whatsapp,
-    password_hash: settings.passwordHash,
-    access_code: settings.accessCode,
-    about_info: JSON.stringify(settings.aboutInfo || {}),
-    social: JSON.stringify(settings.social || {}),
-    welcome_title: settings.welcomeTitle || '',
-    welcome_msg: settings.welcomeMsg || '',
-    order_msg: settings.orderMsg || ''
+
+  // ★ نخزّن welcome_title / welcome_msg / order_msg جوه about_info دايماً
+  // (مش بنستخدم أعمدة منفصلة عشان Supabase مش عنده الأعمدة دي)
+  const aboutInfoFull = {
+    ...(settings.aboutInfo || {}),
+    _welcome_title: settings.welcomeTitle || '',
+    _welcome_msg:   settings.welcomeMsg   || '',
+    _order_msg:     settings.orderMsg     || ''
   };
 
-  // حفظ محلي أولاً دايماً
+  // ★ payload بيحتوي بس على الأعمدة الموجودة فعلاً في Supabase
+  const payload = {
+    whatsapp:      settings.whatsapp      || '',
+    password_hash: settings.passwordHash  || '',
+    access_code:   settings.accessCode   || '',
+    about_info:    JSON.stringify(aboutInfoFull),
+    social:        JSON.stringify(settings.social || {})
+  };
+
+  // حفظ محلي دايماً (IndexedDB + localStorage)
   try { await idbPut('meta', { key: 'settings', value: payload }); } catch(e) {}
   try { localStorage.setItem('mahsmarket_settings_backup', JSON.stringify(payload)); } catch(e) {}
 
-  // محاولة Supabase مع إظهار خطأ واضح لو فشل
+  // Supabase — PATCH لو الصف موجود، وإلا POST
   let sbOk = false;
   try {
     await sbFetch('settings?id=eq.1', { method: 'PATCH', body: JSON.stringify(payload), prefer: 'return=minimal' });
@@ -700,15 +725,14 @@ async function saveSettings() {
       console.error('❌ saveSettings Supabase failed:', e2.message);
     }
   }
+
   if (!sbOk) {
     showToast('⚠️ حُفظ محلياً فقط — Supabase مش شغال. اضغط "تشخيص" في لوحة التحكم', 'warn');
     _sbCanWrite = false;
   }
 }
 
-// ============================================================
-// COUPONS
-// ============================================================
+
 async function loadCoupons() {
   try { const data = await sbFetch('coupons?order=created_at.desc'); return data || []; } catch(e) { return []; }
 }
@@ -2151,6 +2175,7 @@ async function saveAdminSettings() {
   initWaFloating();
   updateFooterSocial();
   applyStoreSettings();
+  initAnnouncementBar();
 }
 
 // ============================================================
@@ -2208,6 +2233,9 @@ function applyStoreSettings() {
   // ⑥ wa floating bubble name
   const waBubbleName = document.querySelector('.wa-bubble-name');
   if (waBubbleName && a.title) waBubbleName.textContent = a.title;
+
+  // ★ تحديث شريط الإعلان
+  initAnnouncementBar();
 }
 
 // دالة تجيب رسالة تأكيد الطلب مع استبدال المتغيرات
@@ -2553,6 +2581,45 @@ function checkUserPanel() { if (getCurrentUserId()) showUserPanelBtn(); }
 // ============================================================
 // ★ DOM READY — التسلسل المحسّن للتحميل
 // ============================================================
+
+// ============================================================
+// ANNOUNCEMENT BAR — شريط الإعلان العلوي
+// ============================================================
+function initAnnouncementBar() {
+  const bar = document.getElementById('announcementBar');
+  if (!bar) return;
+
+  const title = settings.welcomeTitle || '';
+  const sub   = settings.welcomeMsg   || '';
+
+  // لو مفيش رسالة مكتوبة في الإعدادات، مش نظهر الشريط
+  if (!title && !sub) { bar.style.display = 'none'; return; }
+
+  // لو الزبون أغلقه في نفس الجلسة، ما نظهرهوش تاني
+  if (sessionStorage.getItem('ann_closed') === '1') { bar.style.display = 'none'; return; }
+
+  document.getElementById('annTitle').textContent = title;
+  document.getElementById('annSub').textContent   = sub;
+
+  // إخفاء السطر الثاني لو فاضي
+  document.getElementById('annSub').style.display = sub ? '' : 'none';
+
+  bar.style.display = 'block';
+}
+
+function closeAnnouncementBar() {
+  const bar = document.getElementById('announcementBar');
+  if (!bar) return;
+  bar.style.animation = 'none';
+  bar.style.transition = 'opacity .25s, max-height .3s';
+  bar.style.opacity = '0';
+  bar.style.maxHeight = '0';
+  bar.style.overflow = 'hidden';
+  bar.style.padding = '0';
+  setTimeout(() => { bar.style.display = 'none'; }, 300);
+  sessionStorage.setItem('ann_closed', '1');
+}
+
 window.addEventListener('DOMContentLoaded', async () => {
 
   // ① عرض المنتجات من IndexedDB فوراً (بدون انتظار)
@@ -2638,6 +2705,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   initWaFloating();
   updateFooterSocial();
   applyStoreSettings();
+  initAnnouncementBar();
 
   // Search
   const searchInput = document.getElementById('productSearch');

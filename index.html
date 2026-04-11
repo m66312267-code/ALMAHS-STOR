@@ -181,6 +181,15 @@
   </div>
 </nav>
 
+<!-- ANNOUNCEMENT BAR -->
+<div id="announcementBar" style="display:none;">
+  <button class="ann-close" onclick="closeAnnouncementBar()" aria-label="إغلاق">✕</button>
+  <div class="ann-inner">
+    <div class="ann-title" id="annTitle"></div>
+    <div class="ann-sub"   id="annSub"></div>
+  </div>
+</div>
+
 <!-- HERO -->
 <section class="hero">
   <div class="hero-left">
@@ -735,18 +744,15 @@
 
       <!-- ★ رسالة ما بعد الطلب -->
       <div class="settings-section">
-        <h4>📩 رسالة طلب الواتساب</h4>
-        <p class="settings-hint">الرسالة اللي بتتبعت على واتساب بعد كل طلب — لو فاضية بيتبعت رسالة افتراضية<br>
-          <span style="color:var(--gold);font-size:11px;">المتغيرات المتاحة:</span>
-          <span style="font-family:monospace;font-size:11px;color:var(--fire);"> {name} {phone} {product} {price} {coupon} {store}</span>
-        </p>
-        <textarea id="settingsOrderMsg" class="form-input" rows="4" placeholder="مثال:&#10;🛒 طلب جديد من {store}&#10;👤 {name} | 📞 {phone}&#10;📦 {product}&#10;💰 الإجمالي: {price}" style="resize:vertical;font-family:monospace;font-size:13px;"></textarea>
+        <h4>📩 رسالة تأكيد الطلب</h4>
+        <p class="settings-hint">بتظهر للزبون بعد ما يكمل الطلب — استخدم {name} لاسم الزبون و {product} لاسم المنتج</p>
+        <textarea id="settingsOrderMsg" class="form-input" rows="3" placeholder="مثال: شكراً {name}! طلبك على {product} اتسجل بنجاح ✅ هنتواصل معاك على واتساب في أقرب وقت 🚀" style="resize:vertical;"></textarea>
       </div>
 
       <!-- ★ معلومات المتجر -->
       <div class="settings-section">
         <h4>🏪 معلومات المتجر</h4>
-        <p class="settings-hint">اسم المتجر هيتحدث في <strong style="color:var(--gold);">عنوان المتصفح + بانر الصفحة الرئيسية + الفوتر + صفحة "عن المتجر"</strong></p>
+        <p class="settings-hint">بتظهر في صفحة "عن المتجر"</p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
           <div>
             <label style="display:block;font-size:12px;font-weight:700;color:var(--text-sub);margin-bottom:6px;">اسم المتجر</label>

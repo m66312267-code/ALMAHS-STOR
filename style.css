@@ -1733,3 +1733,99 @@ nav {
   .cat-card { padding: 18px 14px; }
   .cat-card-icon { width: 44px; height: 44px; font-size: 26px; }
 }
+
+/* ============================================================
+   ANNOUNCEMENT BAR — شريط الإعلان العلوي (FIRE 🔥)
+   ============================================================ */
+#announcementBar {
+  width: 100%;
+  background: #0d0d0d;
+  color: #fff;
+  text-align: center;
+  padding: 14px 52px;
+  position: relative;
+  z-index: 200;
+  overflow: hidden;
+  border-bottom: 2px solid transparent;
+  border-image: linear-gradient(90deg, #22a046, #ff8c00, #22a046) 1;
+  animation: slideDownBar .4s cubic-bezier(.22,1,.36,1);
+}
+
+/* شريط متحرك في الخلفية */
+#announcementBar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(34,160,70,.08) 30%,
+    rgba(255,140,0,.06) 60%,
+    transparent 100%);
+  background-size: 200% 100%;
+  animation: annSweep 3s ease-in-out infinite;
+}
+@keyframes annSweep {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes slideDownBar {
+  from { transform: translateY(-110%); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
+#announcementBar .ann-inner {
+  position: relative;
+  z-index: 1;
+}
+
+#announcementBar .ann-title {
+  font-size: 16px;
+  font-weight: 900;
+  margin-bottom: 4px;
+  letter-spacing: .4px;
+  background: linear-gradient(90deg, #22a046, #6ee08a, #ff8c00, #22a046);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: annGrad 4s linear infinite;
+}
+@keyframes annGrad {
+  0%   { background-position: 0% 0; }
+  100% { background-position: 300% 0; }
+}
+
+#announcementBar .ann-sub {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,.82);
+  line-height: 1.5;
+}
+
+#announcementBar .ann-close {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.15);
+  color: rgba(255,255,255,.7);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .2s;
+  font-family: inherit;
+  line-height: 1;
+  z-index: 2;
+}
+#announcementBar .ann-close:hover {
+  background: rgba(239,68,68,.25);
+  border-color: rgba(239,68,68,.4);
+  color: #fff;
+}
